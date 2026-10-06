@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ondas, Fourier y Cuántica</title>
+<meta name="description" content="Recorrido interactivo: de las ciencias básicas (ondas, trigonometría, cálculo integral, probabilidad) a la transformada de Fourier, la computación cuántica y la ciberseguridad.">
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#1f1e1c;--muted:#5f5e5a;--faint:#8a8984;--line:#e4e2db;--soft:#f0eee8;--accent:#534AB7;--accent-soft:#EEEDFE;--blue:#378ADD;--coral:#D85A30;--teal:#1D9E75;--pink:#D4537E;--purple:#7F77DD;--amber:#EF9F27;--red:#E24B4A;--ok-bg:#E1F5EE;--ok:#0F6E56;--bad-bg:#FCEBEB;--bad:#A32D2D;--warn:#854F0B;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--card:#1e1e1c;--ink:#ecebe6;--muted:#b4b2a9;--faint:#888780;--line:#34332f;--soft:#292826;--accent:#AFA9EC;--accent-soft:#26215C;--ok-bg:#04342C;--ok:#5DCAA5;--bad-bg:#501313;--bad:#F09595;--warn:#FAC775;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151514;--card:#1e1e1c;--ink:#ecebe6;--muted:#b4b2a9;--faint:#888780;--line:#34332f;--soft:#292826;--accent:#AFA9EC;--accent-soft:#26215C;--ok-bg:#04342C;--ok:#5DCAA5;--bad-bg:#501313;--bad:#F09595;--warn:#FAC775;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .in{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-size:14px;padding:4px 10px;border-radius:999px}
+nav a:hover{background:var(--soft);color:var(--ink)}
+nav .brand{white-space:nowrap;font-weight:700;color:var(--ink);margin-right:6px}
+main{max-width:980px;margin:0 auto;padding:0 16px 60px}
+header.hero{padding:56px 0 28px}
+.kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.12;margin:.3em 0 .4em;letter-spacing:-.02em}
+h2{font-size:clamp(22px,3.2vw,28px);line-height:1.2;margin:0 0 .3em;letter-spacing:-.01em}
+h3{font-size:18px;margin:1.4em 0 .4em}
+.lead{font-size:18px;color:var(--muted);max-width:720px}
+.flag{display:inline-flex;flex-direction:column;width:28px;height:20px;border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:8px}
+.flag i{display:block}.flag i:nth-child(1){flex:2;background:#FCD116}.flag i:nth-child(2){flex:1;background:#003893}.flag i:nth-child(3){flex:1;background:#CE1126}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px clamp(16px,3vw,32px);margin:22px 0;transition:opacity .3s}
+section.card.dim{opacity:.3}
+.num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--card);font-weight:700;font-size:15px;margin-right:10px;vertical-align:3px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:.2em 0 1em}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button.on{background:var(--accent);color:var(--card);border-color:var(--accent)}
+button{font:inherit;font-size:14px;padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{background:var(--soft)}
+button.sel{border-color:var(--accent);color:var(--accent);font-weight:600}
+.ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:.6rem 0}
+.ctl label{font-size:14px;color:var(--muted)}
+.ctl output,.ctl .o{font-size:14px;font-weight:600;min-width:62px}
+input[type=range]{flex:1;min-width:160px;accent-color:var(--accent)}
+canvas{width:100%;display:block}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.metric{background:var(--soft);border-radius:12px;padding:.8rem 1rem}
+.metric .l{font-size:13px;color:var(--muted)}
+.metric .v{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:.75rem 1rem;border-radius:0 10px 10px 0;margin:1rem 0;font-size:15px}
+.fix{border-left-color:var(--coral)}
+.formula{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--soft);padding:.7rem 1rem;border-radius:10px;overflow-x:auto;font-size:15px;white-space:nowrap}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.small{font-size:13px;color:var(--faint)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.timeline{display:grid;gap:10px;margin-top:1rem}
+.tl{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start}
+.tl b{color:var(--accent);font-variant-numeric:tabular-nums}
+.chk{display:inline-flex;align-items:center;gap:6px;margin:4px 14px 4px 0;font-size:14px;cursor:pointer}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px}
+.tablewrap{overflow-x:auto}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;min-height:104px;margin:.5rem 0 1rem}
+.pulse{border:1px solid var(--line);border-radius:8px;padding:4px;text-align:center}
+.pulse.det{border:2px solid var(--teal)}
+.pulse .t{font-size:11px;color:var(--muted)}
+.alert{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:10px;background:var(--soft);color:var(--muted)}
+.alert.ok{background:var(--ok-bg);color:var(--ok)}.alert.bad{background:var(--bad-bg);color:var(--bad)}
+.bars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.col .area{position:relative;height:200px}
+.col .mid{position:absolute;left:0;right:0;top:100px;border-top:1px solid var(--line)}
+.col .b{position:absolute;left:18%;width:64%;border-radius:4px;transition:top .5s,height .5s}
+.col .lab{text-align:center;font-size:12px}
+.quiz .q{padding:14px 0;border-bottom:1px solid var(--line)}
+.quiz .opts{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0}
+.quiz button.right{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.quiz button.wrong{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.quiz .exp{font-size:14px;color:var(--muted)}
+footer{max-width:980px;margin:0 auto;padding:30px 16px 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+@media (max-width:560px){.tl{grid-template-columns:1fr}.lead{font-size:16px}}
+</style>
+</head>
+<body>
+<nav><div class="in">
+<span class="brand">∿ Ciencias básicas</span>
+<a href="#mapa">Mapa</a><a href="#ondas">Ondas</a><a href="#superposicion">Superposición</a><a href="#fourier">Fourier</a><a href="#solido">Integral</a><a href="#cuantica">Clásica vs cuántica</a><a href="#resonancia">Frecuencia</a><a href="#fibra">Longitud de onda</a><a href="#decoy">Amplitud</a><a href="#grover">Probabilidad</a><a href="#quiz">Quiz</a>
+<button id="theme" style="margin-left:auto;padding:4px 10px" aria-label="Cambiar tema">◐</button>
+</div></nav>
+
+<main>
+<header class="hero">
+<div class="kicker"><span class="flag"><i></i><i></i><i></i></span>Ingeniería de Sistemas y Computación · Colombia</div>
+<h1>Ciencias básicas: los cimientos de la ingeniería</h1>
+<p class="lead">Un recorrido interactivo que va de una onda de sonido a la transformada de Fourier, el cálculo integral y la computación cuántica aplicada a la ciberseguridad. Todo se mueve: cambia los controles y observa.</p>
+<p>Las ingenierías (industrial, civil, electrónica, telecomunicaciones, sistemas, datos) se construyen sobre lo mismo: álgebra, aritmética, trigonometría, estadística y probabilidad, física, cálculo y ecuaciones diferenciales. Sobre esa base se levantan las tecnologías de hoy, como la inteligencia artificial, el machine learning y la computación cuántica. Este sitio muestra esas conexiones con ejemplos concretos.</p>
+<p class="small">Por Juan (<a href="https://github.com/jlozano1118">@jlozano1118</a>), estudiante de Ingeniería de Sistemas y Computación de la Universidad Católica de Colombia, con interés en ciberseguridad.</p>
+</header>
+
+<section class="card" id="mapa">
+<h2>Mapa de ciencias básicas</h2>
+<p>Toca una ciencia y se resaltan las secciones donde se usa. Así se ve la sinergia: ningún tema vive aislado.</p>
+<div class="chips" id="chips"></div>
+<h3>Mi recorrido</h3>
+<div class="timeline">
+<div class="tl"><b>2022-1</b><div>Fundamentación Matemática: álgebra, aritmética y trigonometría, la base de todo lo que sigue.</div></div>
+<div class="tl"><b>2024</b><div>Física mecánica y Ondas, óptica y laboratorio: frecuencia, amplitud, longitud de onda y superposición.</div></div>
+<div class="tl"><b>2025</b><div>Cierre de ciencias básicas: cálculo, probabilidad y álgebra lineal para modelar sistemas.</div></div>
+<div class="tl"><b>2026</b><div>6.º semestre: ciberseguridad, computación cuántica y la transformada de Fourier como puente entre todo.</div></div>
+</div>
+</section>
+
+<!-- 1 ONDAS -->
+<section class="card" id="ondas" data-tags="trig fis">
+<h2><span class="num">1</span>¿Qué es una onda?</h2>
+<div class="tags"></div>
+<p>Una onda es una perturbación que se repite. En el sonido, lo que se repite es la <b>presión del aire</b>: sube por encima de lo normal, baja por debajo y vuelve. La línea del medio es el <b>equilibrio</b>.</p>
+<div class="grid2">
+<ul style="margin:0">
+<li><b>Cresta:</b> punto más alto (máxima presión).</li>
+<li><b>Valle:</b> punto más bajo (mínima presión).</li>
+<li><b>Amplitud (A):</b> distancia del equilibrio a la cresta. En el sonido, el volumen.</li>
+</ul>
+<ul style="margin:0">
+<li><b>Frecuencia (f):</b> oscilaciones por segundo, en hertz (Hz).</li>
+<li><b>Periodo (T):</b> tiempo de una oscilación. <span class="mono">T = 1/f</span></li>
+<li><b>Longitud de onda (λ):</b> distancia de cresta a cresta. <span class="mono">λ = v/f</span></li>
+</ul>
+</div>
+<div class="ctl"><label for="fOnda">Frecuencia</label><input type="range" id="fOnda" min="0.5" max="3" step="0.1" value="1"><span class="o" id="fOndaO"></span></div>
+<div class="ctl"><label for="aOnda">Amplitud</label><input type="range" id="aOnda" min="20" max="80" step="1" value="60"><span class="o" id="aOndaO"></span></div>
+<canvas id="cvOnda" style="height:260px"></canvas>
+<div class="metrics">
+<div class="metric"><div class="l">Periodo T = 1/f</div><div class="v" id="tOnda"></div></div>
+<div class="metric"><div class="l">Longitud de onda λ</div><div class="v" id="lOnda"></div></div>
+<div class="metric"><div class="l">Oscilaciones del punto naranja</div><div class="v" id="nOnda"></div></div>
+</div>
+<div class="note">El punto naranja es un pedacito de aire: solo sube y baja, no viaja. Lo que viaja es el <b>patrón</b>. Un La de 440 Hz hace esto 440 veces por segundo: <span class="mono">T ≈ 0,0023 s</span> y, con el sonido a 343 m/s, <span class="mono">λ = 343/440 ≈ 0,78 m</span>. Si duplicas f, λ se reduce a la mitad.</div>
+</section>
+
+<!-- 2 SUPERPOSICION -->
+<section class="card" id="superposicion" data-tags="trig fis alg">
+<h2><span class="num">2</span>Superposición: cuando dos ondas se suman</h2>
+<div class="tags"></div>
+<p>Cuando suenan dos notas a la vez, el aire no escoge una: en cada instante la presión total es la <b>suma</b> de las dos. Si coinciden cresta con cresta, la suma crece (<b>interferencia constructiva</b>). Si coincide cresta con valle, se cancelan (<b>interferencia destructiva</b>).</p>
+<div class="ctl"><label for="f1Sup">Onda 1</label><input type="range" id="f1Sup" min="1" max="8" step="0.1" value="3"><span class="o" id="f1SupO"></span></div>
+<div class="ctl"><label for="f2Sup">Onda 2</label><input type="range" id="f2Sup" min="1" max="8" step="0.1" value="3.5"><span class="o" id="f2SupO"></span></div>
+<canvas id="cvSup" style="height:340px"></canvas>
+<div class="legend"><span><i style="background:var(--blue)"></i>Onda 1</span><span><i style="background:var(--coral)"></i>Onda 2</span><span><i style="background:var(--purple)"></i>Suma (lo que llega al oído)</span><span><i style="background:var(--teal);height:10px;opacity:.4"></i>Constructiva</span><span><i style="background:var(--pink);height:10px;opacity:.4"></i>Destructiva</span></div>
+<div class="note">Con 3 Hz y 3,5 Hz las ondas van a ritmos distintos: se desfasan poco a poco, y la suma "respira" (crece y se apaga). Ese efecto se llama <b>pulsación</b>. La forma mezclada parece desordenada, pero cada onda sigue completa dentro de ella. Por eso se puede deshacer la mezcla.</div>
+</section>
+
+<!-- 3 FOURIER -->
+<section class="card" id="fourier" data-tags="calc comp trig fis">
+<h2><span class="num">3</span>La transformada de Fourier: separar la mezcla</h2>
+<div class="tags"></div>
+<p>Imagina cuatro pinturas mezcladas: amarillo, azul, rojo y negro. Con pintura real no se pueden separar. Con ondas sí, porque se suman sin destruirse. La transformada de Fourier es la <b>máquina matemática</b> que recibe la mezcla y devuelve qué frecuencias puras la forman. En música, sería encontrar do, re, mi y fa dentro de un acorde.</p>
+<p>¿Cómo funciona la máquina? Se <b>enrolla</b> la señal alrededor de un círculo, a una velocidad de giro que vamos cambiando. Cuando esa velocidad coincide con una frecuencia que está en la mezcla, la curva se carga hacia un lado y su <b>centro de masa</b> se aleja del centro. Para cualquier otra velocidad, la curva queda repartida y el centro de masa se queda quieto en el medio. La máquina trata distinto a la frecuencia correcta.</p>
+<div id="fouNotes" style="margin:.4rem 0"></div>
+<div class="ctl"><button id="fouPlay">▶ Escuchar la mezcla</button><span class="small">Las frecuencias de la gráfica están en cámara lenta (1 a 4 Hz); el audio usa las notas reales.</span></div>
+<h3>a) La mezcla en el tiempo</h3>
+<canvas id="cvMix" style="height:150px"></canvas>
+<h3>b) La máquina de enrollar</h3>
+<div class="ctl"><label for="fw">Velocidad de giro</label><input type="range" id="fw" min="0" max="5" step="0.01" value="0.6"><span class="o" id="fwO"></span><button id="fwSweep">Barrido automático</button></div>
+<canvas id="cvWind" style="height:280px"></canvas>
+<h3>c) Lo que entrega la máquina: el espectro</h3>
+<canvas id="cvSpec" style="height:180px"></canvas>
+<div class="metrics">
+<div class="metric"><div class="l">Velocidad de giro</div><div class="v" id="fouF"></div></div>
+<div class="metric"><div class="l">Distancia del centro de masa</div><div class="v" id="fouC"></div></div>
+<div class="metric"><div class="l">¿Hay esa frecuencia?</div><div class="v" id="fouY"></div></div>
+</div>
+<h3>De la máquina a la integral</h3>
+<p>El enrollado se escribe con números complejos: <span class="mono">e<sup>−2πift</sup></span> es un punto que gira sobre el círculo <span class="mono">f</span> vueltas por segundo. Multiplicar la señal por eso es enrollarla, y la integral suma todos los puntos (como un promedio: el centro de masa).</p>
+<div class="formula">ĝ(f) = ∫ g(t) · e<sup>−2πift</sup> dt</div>
+<p class="small">Los picos del espectro están justo en las frecuencias que encendiste. Esta misma idea, en versión cuántica (la transformada cuántica de Fourier), es el corazón del algoritmo de Shor.</p>
+</section>
+
+<!-- 4 SOLIDO -->
+<section class="card" id="solido" data-tags="calc trig">
+<h2><span class="num">4</span>Cálculo integral: el sólido de una cresta</h2>
+<div class="tags"></div>
+<p>Toma la cresta de una onda, <span class="mono">y = sin(x)</span> entre 0 y π, y hazla girar alrededor del eje x. El resultado se parece a un balón de rugby. ¿Cuál es su volumen? Lo calculamos con el <b>método de discos</b>: rebanar el balón en monedas y sumarlas.</p>
+<div class="chips" id="solSteps"></div>
+<p id="solCap" style="min-height:78px;margin:.8rem 0 0"></p>
+<canvas id="cvSol" style="height:340px"></canvas>
+<div class="ctl" id="solRowN"><label for="solN">Número de discos</label><input type="range" id="solN" min="2" max="60" step="1" value="6"><span class="o" id="solNO"></span><button id="solAnim">Animar</button></div>
+<div class="ctl" id="solRowS"><label for="solS">Escoge un disco</label><input type="range" id="solS" min="0" max="5" step="1" value="2"><span class="o" id="solSO"></span></div>
+<div class="metrics">
+<div class="metric"><div class="l" id="sl1"></div><div class="v" id="sv1"></div></div>
+<div class="metric"><div class="l" id="sl2"></div><div class="v" id="sv2"></div></div>
+<div class="metric"><div class="l" id="sl3"></div><div class="v" id="sv3"></div></div>
+</div>
+<h3>La integral paso a paso</h3>
+<div class="formula">V = π ∫<sub>0</sub><sup>π</sup> [sin(x)]² dx</div>
+<p>Con la identidad <span class="mono">sin²(x) = (1 − cos 2x)/2</span>:</p>
+<div class="formula">V = (π/2) [ x − sin(2x)/2 ]<sub>0</sub><sup>π</sup> = (π/2)(π − 0) = π²/2 ≈ 4,93 u³</div>
+<p class="small">En el paso 4 se usan discos que caben por dentro sin salirse; por eso la suma se acerca al valor exacto desde abajo.</p>
+</section>
+
+<!-- 5 CLASICA VS CUANTICA -->
+<section class="card" id="cuantica" data-tags="alg lin qm">
+<h2><span class="num">5</span>Dos mundos: computación clásica y cuántica</h2>
+<div class="tags"></div>
+<div class="grid2">
+<div><h3 style="margin-top:0">Clásica</h3><p>Un <b>bit</b> está en 0 o en 1. Un registro de n bits guarda <b>un</b> valor a la vez. La memoria crece de forma lineal.</p></div>
+<div><h3 style="margin-top:0">Cuántica</h3><p>Un <b>cúbit</b> puede estar en una superposición <span class="mono">α|0⟩ + β|1⟩</span>, con <span class="mono">|α|² + |β|² = 1</span>. Para describir n cúbits se necesitan <b>2<sup>n</sup> amplitudes</b>: el crecimiento es exponencial.</p></div>
+</div>
+<div class="ctl"><label for="nQ">Número de cúbits</label><input type="range" id="nQ" min="1" max="60" step="1" value="30"><span class="o" id="nQO"></span></div>
+<canvas id="cvQ" style="height:260px"></canvas>
+<div class="legend"><span><i style="background:var(--purple)"></i>Memoria para simular n cúbits (16 bytes por amplitud)</span><span><i style="background:var(--blue)"></i>Memoria de n bits clásicos</span></div>
+<div class="metrics">
+<div class="metric"><div class="l">Amplitudes 2ⁿ</div><div class="v" id="qA"></div></div>
+<div class="metric"><div class="l">Memoria para simularlo</div><div class="v" id="qM"></div></div>
+<div class="metric"><div class="l">¿Cabe en un portátil de 16 GB?</div><div class="v" id="qF"></div></div>
+</div>
+<div class="note">Con 50 cúbits: 2<sup>50</sup> × 16 bytes = 16 PiB (≈ 18 PB). Por eso simular un sistema cuántico en un computador clásico es extremadamente costoso, mientras que un computador cuántico manipula esos estados sin guardar cada amplitud por separado. A cambio, mantener la coherencia y corregir errores exige técnicas especiales.</div>
+</section>
+
+<!-- 6 FRECUENCIA -->
+<section class="card" id="resonancia" data-tags="fis qm prob">
+<h2><span class="num">6</span>Frecuencia (Hz): controlar un cúbit</h2>
+<div class="tags"></div>
+<p>Las computadoras cuánticas que algún día podrían romper RSA o ECC con el algoritmo de Shor usan cúbits superconductores que resuenan entre <b>4 y 8 GHz</b> (miles de millones de oscilaciones por segundo). Para ejecutar una puerta lógica, se dispara un pulso de microondas sintonizado exactamente a esa frecuencia: <b>resonancia</b>, como empujar un columpio al ritmo correcto. Si el pulso se desafina unos pocos MHz, la puerta falla y el error arruina el cálculo.</p>
+<div class="ctl"><label for="dRes">Desviación del pulso</label><input type="range" id="dRes" min="-30" max="30" step="0.5" value="0"><span class="o" id="dResO"></span><button id="resPlay">Disparar pulso</button></div>
+<canvas id="cvRes" style="height:300px"></canvas>
+<div class="metrics">
+<div class="metric"><div class="l">Cúbit</div><div class="v">5,0000 GHz</div></div>
+<div class="metric"><div class="l">Pulso</div><div class="v" id="resF"></div></div>
+<div class="metric"><div class="l">P(|1⟩) al final</div><div class="v" id="resP"></div></div>
+<div class="metric"><div class="l">Puerta</div><div class="v" id="resG"></div></div>
+</div>
+<p class="small">Modelo de Rabi con frecuencia de Rabi de 10 MHz y un pulso π. Arriba: probabilidad final según la desviación. Abajo: el cúbit girando de |0⟩ a |1⟩ durante el pulso.</p>
+</section>
+
+<!-- 7 LONGITUD DE ONDA -->
+<section class="card" id="fibra" data-tags="fis alg">
+<h2><span class="num">7</span>Longitud de onda (λ): fotones por fibra óptica</h2>
+<div class="tags"></div>
+<p>La <b>distribución cuántica de claves (QKD)</b> envía fotones individuales por fibra óptica. Cada kilómetro de fibra absorbe o dispersa una fracción de ellos, y esa pérdida depende mucho de λ. En <b>1550 nm</b> (infrarrojo) la atenuación es mínima, unos 0,2 dB/km. En luz visible es decenas de veces mayor, sobre todo por la dispersión de Rayleigh, que crece como 1/λ⁴.</p>
+<div class="ctl" id="fibBtns"></div>
+<div class="ctl"><label for="fibL">Distancia</label><input type="range" id="fibL" min="1" max="100" step="1" value="20"><span class="o" id="fibLO"></span></div>
+<canvas id="cvFib" style="height:130px"></canvas>
+<div class="metrics">
+<div class="metric"><div class="l">Atenuación</div><div class="v" id="fibA"></div></div>
+<div class="metric"><div class="l">Llegada teórica 10<sup>−αL/10</sup></div><div class="v" id="fibT"></div></div>
+<div class="metric"><div class="l">Llegaron / enviados</div><div class="v" id="fibC"></div></div>
+</div>
+<div class="note fix"><b>Ojo con un mito:</b> en QKD la pérdida de fotones es normal y se tiene en cuenta; no se interpreta como un espía. Lo que delata a un atacante es una <b>tasa de errores</b> mayor de la esperada (por ejemplo en BB84) o, como en la siguiente sección, una <b>estadística de llegadas</b> que no cuadra con la física. Usar 1550 nm sirve para que lleguen suficientes fotones y la clave se genere más rápido y a más distancia.</div>
+</section>
+
+<!-- 8 DECOY -->
+<section class="card" id="decoy" data-tags="prob fis">
+<h2><span class="num">8</span>Amplitud (A): pulsos señuelo contra espías</h2>
+<div class="tags"></div>
+<p>La intensidad de la luz es proporcional a <b>A²</b>. Un láser débil no lanza exactamente un fotón: el número de fotones en cada pulso es aleatorio y sigue la <b>distribución de Poisson</b>, con promedio μ fijado por la amplitud:</p>
+<div class="formula">P(n) = μⁿ · e<sup>−μ</sup> / n!</div>
+<div class="tablewrap"><table>
+<tr><th>Fotones en el pulso</th><th>Señal (μ = 0,5)</th><th>Señuelo (μ = 0,1)</th></tr>
+<tr><td>0</td><td>60,7 %</td><td>90,5 %</td></tr>
+<tr><td>1</td><td>30,3 %</td><td>9,0 %</td></tr>
+<tr><td>2 o más</td><td>9,0 %</td><td>0,5 %</td></tr>
+</table></div>
+<p>En los pulsos con 2 o más fotones, un atacante (Eva) puede robar uno y dejar pasar el resto: es el <b>ataque de división de fotones (PNS)</b>. Para no levantar sospechas, bloquea los pulsos de un solo fotón. Pero Eva <b>no sabe</b> si un pulso es señal o señuelo, porque el emisor cambia la amplitud al azar. Como los pulsos de varios fotones son casi todos de señal, su ataque desbalancea la proporción de llegadas.</p>
+<div class="ctl"><button id="eveBtn">Activar a Eva (ataque PNS)</button><button id="eveRst">Reiniciar conteo</button><span class="small" id="eveSt">Canal honesto</span></div>
+<div class="small">Últimos pulsos: cada ● es un fotón; el borde verde indica que Bob detectó algo.</div>
+<div class="strip" id="eveStrip"></div>
+<div class="metrics">
+<div class="metric"><div class="l">Llegada de señal</div><div class="v" id="eveS"></div></div>
+<div class="metric"><div class="l">Llegada de señuelo</div><div class="v" id="eveD"></div></div>
+<div class="metric"><div class="l">Proporción señal / señuelo</div><div class="v" id="eveR"></div><div class="small">Esperada sin espía: 4,9</div></div>
+</div>
+<div class="alert" id="eveA"></div>
+<p class="small">Modelo: el canal deja pasar el 10 % de los fotones. Eva ajusta los pulsos que deja pasar para que la tasa de señal parezca normal; aun así, los señuelos la delatan.</p>
+</section>
+
+<!-- 9 GROVER -->
+<section class="card" id="grover" data-tags="prob lin qm comp">
+<h2><span class="num">9</span>Amplitud de probabilidad: interferencia que busca respuestas</h2>
+<div class="tags"></div>
+<p>En mecánica cuántica, cada estado posible tiene una <b>amplitud de probabilidad</b> (un número que puede ser negativo o complejo). La probabilidad de obtener ese estado al medir es <b>amplitud²</b>. Como las amplitudes pueden tener signo, se pueden cancelar igual que las ondas de la sección 2.</p>
+<p>El <b>algoritmo de Grover</b> busca un elemento entre N repitiendo dos pasos. El <b>oráculo</b> voltea el signo de la respuesta correcta (aquí, <span class="mono">101</span>). La <b>difusión</b> refleja todas las amplitudes respecto al promedio: las incorrectas bajan (interferencia destructiva) y la correcta sube (constructiva).</p>
+<div class="ctl"><button id="grO">1. Oráculo</button><button id="grD">2. Difusión</button><button id="grM">Medir</button><button id="grR">Reiniciar</button></div>
+<div class="bars" id="grBars"></div>
+<div class="metrics">
+<div class="metric"><div class="l">Iteraciones</div><div class="v" id="grI"></div></div>
+<div class="metric"><div class="l">P(respuesta 101)</div><div class="v" id="grP"></div></div>
+<div class="metric"><div class="l">Última medición</div><div class="v" id="grMs">—</div></div>
+</div>
+<div class="note">Con 8 estados, dos iteraciones llevan la respuesta a ≈ 94,5 %. Una tercera la baja a ≈ 33 %: hay un número justo de pasos, como empujar un columpio a destiempo.</div>
+<div class="note fix"><b>Precisión importante:</b> Grover no rompe contraseñas "en segundos". Su ventaja es <b>cuadrática</b>: unos √N pasos en vez de N. Para una clave de 128 bits siguen siendo unos 2⁶⁴ pasos; por eso la defensa típica es duplicar la longitud de la clave (AES-256). El que amenaza de verdad a RSA y ECC es Shor, que usa la transformada cuántica de Fourier.</div>
+</section>
+
+<section class="card" id="resumen">
+<h2>Todo conectado</h2>
+<div class="tablewrap"><table>
+<tr><th>Concepto</th><th>Ciencia básica</th><th>Aplicación</th><th>Qué controla</th></tr>
+<tr><td>Frecuencia f</td><td>Física de ondas, trigonometría</td><td>Pulsos de 4–8 GHz para cúbits</td><td>Que la puerta lógica funcione (resonancia)</td></tr>
+<tr><td>Longitud de onda λ</td><td>Física de ondas, logaritmos (dB)</td><td>Fotones de 1550 nm en fibra (QKD)</td><td>Cuántos fotones llegan</td></tr>
+<tr><td>Amplitud A</td><td>Probabilidad (Poisson)</td><td>Pulsos señal μ=0,5 y señuelo μ=0,1</td><td>Fotones por pulso y detección de espías</td></tr>
+<tr><td>Amplitud de probabilidad</td><td>Álgebra lineal, números complejos</td><td>Algoritmo de Grover</td><td>Qué respuesta aparece al medir</td></tr>
+<tr><td>Transformada de Fourier</td><td>Cálculo integral, números complejos</td><td>Audio, telecomunicaciones, algoritmo de Shor</td><td>Qué frecuencias forman una señal</td></tr>
+<tr><td>Integral de volumen</td><td>Cálculo integral</td><td>Sólidos de revolución</td><td>Sumar infinitas rebanadas</td></tr>
+</table></div>
+<h3>La IA como copiloto, la inteligencia orgánica al mando</h3>
+<p>Este sitio se construyó con ayuda de inteligencia artificial como copiloto: para investigar, visualizar y corregir conceptos. Pero entender, preguntar y conectar las ideas sigue siendo trabajo humano. La IA y el machine learning amplifican lo que sabemos; las ciencias básicas son lo que nos permite saber si lo que nos dicen tiene sentido. Colombia avanza hacia la tecnología, la innovación y el emprendimiento, y esa base es la que nos permitirá llegar a niveles nunca antes vistos.</p>
+</section>
+
+<section class="card quiz" id="quiz">
+<h2>Pon a prueba lo que aprendiste</h2>
+<p class="small">Active recall: responde sin mirar arriba.</p>
+<div id="quizBox"></div>
+<p id="quizScore" style="font-weight:600;margin-top:1rem"></p>
+</section>
+</main>
+
+<footer>
+<p><b>Referencias para profundizar:</b> 3Blue1Brown, <i>But what is the Fourier Transform? A visual introduction</i> (2018) · L. K. Grover, <i>A fast quantum mechanical algorithm for database search</i> (1996) · P. W. Shor, <i>Algorithms for quantum computation: discrete logarithms and factoring</i> (1994) · H.-K. Lo, X. Ma, K. Chen, <i>Decoy State Quantum Key Distribution</i> (2005).</p>
+<p><b>Gracias</b> a los profesores de ciencias básicas que construyeron estos cimientos, en especial Giovanni Martínez, Nelson Fin y Leonardo Silva.</p>
+<p>Hecho por Juan · <a href="https://github.com/jlozano1118">GitHub</a> · <a href="https://instagram.com/js_lozanocalderon">Instagram</a> · Las simulaciones son modelos educativos simplificados.</p>
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';
+const PI=Math.PI;
+function mk(id,h){const c=$(id),x=c.getContext('2d'),o={c,x,W:0,H:h};const rs=()=>{const r=window.devicePixelRatio||1;o.W=c.clientWidth;c.width=o.W*r;c.height=h*r;x.setTransform(r,0,0,r,0,0);};rs();addEventListener('resize',rs);return o;}
+const widgets=[];
+function reg(el,fn){const w={fn,vis:false};new IntersectionObserver(e=>{w.vis=e[0].isIntersecting;}).observe(el);widgets.push(w);}
+let lastT=performance.now();
+function loop(t){const dt=Math.min(.05,(t-lastT)/1000);lastT=t;for(const w of widgets)if(w.vis)w.fn(t,dt);requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+
+/* tema */
+$('theme').onclick=()=>{const r=document.documentElement,d=matchMedia('(prefers-color-scheme: dark)').matches;const cur=r.dataset.theme||(d?'dark':'light');r.dataset.theme=cur==='dark'?'light':'dark';};
+
+/* mapa de ciencias */
+const TAGS={trig:'Trigonometría',fis:'Física de ondas',alg:'Álgebra y logaritmos',calc:'Cálculo integral',comp:'Números complejos',prob:'Probabilidad y estadística',lin:'Álgebra lineal',qm:'Mecánica cuántica'};
+document.querySelectorAll('section[data-tags]').forEach(s=>{s.querySelector('.tags').innerHTML=s.dataset.tags.split(' ').map(t=>`<span class="tag">${TAGS[t]}</span>`).join('');});
+let activeTag=null;
+Object.entries(TAGS).forEach(([k,v])=>{const b=document.createElement('button');b.textContent=v;b.onclick=()=>{activeTag=activeTag===k?null:k;document.querySelectorAll('#chips button').forEach(x=>x.classList.toggle('on',x===b&&activeTag===k));document.querySelectorAll('section[data-tags]').forEach(s=>s.classList.toggle('dim',!!activeTag&&!s.dataset.tags.split(' ').includes(activeTag)));};$('chips').appendChild(b);});
+
+/* 1 ONDA */
+(()=>{const C=mk('cvOnda',260),fI=$('fOnda'),aI=$('aOnda');let ph=0;
+reg(C.c,(t,dt)=>{const ctx=C.x,W=C.W,H=C.H,f=+fI.value,A=+aI.value,lam=200/f;ph+=f*dt;
+$('fOndaO').textContent=f.toFixed(1)+' Hz';$('aOndaO').textContent=A;$('tOnda').textContent=(1/f).toFixed(2)+' s';$('lOnda').textContent=Math.round(lam)+' px';$('nOnda').textContent=Math.floor(ph);
+const mid=H/2+10,tx=cv('--muted');ctx.clearRect(0,0,W,H);
+ctx.strokeStyle=cv('--line');ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();ctx.setLineDash([]);
+ctx.fillStyle=tx;ctx.font='12px system-ui';ctx.fillText('equilibrio',W-70,mid-6);
+const y=x=>mid-A*Math.sin(2*PI*(x/lam-ph));
+ctx.strokeStyle=cv('--blue');ctx.lineWidth=2.5;ctx.beginPath();for(let x=0;x<=W;x+=2){x?ctx.lineTo(x,y(x)):ctx.moveTo(x,y(x));}ctx.stroke();
+let xc=lam*(((ph+0.25)%1+1)%1);if(xc<120)xc+=lam;const xv=xc+lam/2;
+ctx.fillStyle=cv('--teal');ctx.beginPath();ctx.arc(xc,mid-A,5,0,7);ctx.fill();ctx.fillText('cresta',xc-18,mid-A-12);
+ctx.fillStyle=cv('--pink');ctx.beginPath();ctx.arc(xv,mid+A,5,0,7);ctx.fill();ctx.fillText('valle',xv-14,mid+A+20);
+if(xc+lam<W-10){const yb=mid-A-30;ctx.strokeStyle=tx;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(xc,yb);ctx.lineTo(xc+lam,yb);ctx.moveTo(xc,yb-5);ctx.lineTo(xc,yb+5);ctx.moveTo(xc+lam,yb-5);ctx.lineTo(xc+lam,yb+5);ctx.stroke();ctx.fillStyle=tx;ctx.fillText('λ',xc+lam/2-3,yb-6);}
+const xa=W-30;ctx.strokeStyle=tx;ctx.beginPath();ctx.moveTo(xa,mid);ctx.lineTo(xa,mid-A);ctx.stroke();ctx.fillText('A',xa+6,mid-A/2);
+ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(60,y(60),7,0,7);ctx.fill();});})();
+
+/* 2 SUPERPOSICION */
+(()=>{const C=mk('cvSup',340),a=$('f1Sup'),b=$('f2Sup');let s=0;
+reg(C.c,(t,dt)=>{const ctx=C.x,W=C.W,f1=+a.value,f2=+b.value;s+=dt/4;
+$('f1SupO').textContent=f1.toFixed(1)+' Hz';$('f2SupO').textContent=f2.toFixed(1)+' Hz';
+const T=x=>2*x/W+s,w1=x=>Math.sin(2*PI*f1*T(x)),w2=x=>Math.sin(2*PI*f2*T(x));
+ctx.clearRect(0,0,W,C.H);const m3=260;
+for(let x=0;x<W;x+=3){const u=w1(x),v=w2(x);if(Math.abs(u)>.5&&Math.abs(v)>.5){ctx.fillStyle=u*v>0?'rgba(29,158,117,0.2)':'rgba(212,83,126,0.2)';ctx.fillRect(x,m3-78,3,156);}}
+const axis=(m,l)=>{ctx.strokeStyle=cv('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,m);ctx.lineTo(W,m);ctx.stroke();ctx.fillStyle=cv('--muted');ctx.font='12px system-ui';ctx.fillText(l,4,m-34);};
+const line=(fn,m,c,w)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();for(let x=0;x<=W;x+=2){const y=m-fn(x);x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();};
+axis(50,'Onda 1');axis(140,'Onda 2');axis(m3,'Suma');
+line(x=>28*w1(x),50,cv('--blue'),2);line(x=>28*w2(x),140,cv('--coral'),2);line(x=>36*(w1(x)+w2(x)),m3,cv('--purple'),2.5);});})();
+
+/* 3 FOURIER */
+(()=>{const notes=[{n:'Do',p:'amarillo',f:1,c:'--amber',hz:261.63},{n:'Re',p:'azul',f:2,c:'--blue',hz:293.66},{n:'Mi',p:'rojo',f:3,c:'--red',hz:329.63},{n:'Fa',p:'negro',f:4,c:'--ink',hz:349.23}];
+const on=[true,false,true,false],Tt=4,NS=800;let S=[],sweep=false;
+notes.forEach((nt,i)=>{const l=document.createElement('label');l.className='chk';l.innerHTML=`<input type="checkbox" ${on[i]?'checked':''}><span class="sw" style="background:var(${nt.c})"></span>${nt.n} · ${nt.p} (${nt.f} Hz)`;l.querySelector('input').onchange=e=>{on[i]=e.target.checked;spec();};$('fouNotes').appendChild(l);});
+const g=t=>{let s=0;for(let i=0;i<4;i++)if(on[i])s+=Math.cos(2*PI*notes[i].f*t);return s;};
+const samp=()=>{const a=[];for(let k=0;k<NS;k++){const t=k/NS*Tt;a.push([t,g(t)]);}return a;};
+let G=samp();
+const com=fw=>{let re=0,im=0;for(const [t,v] of G){const a=-2*PI*fw*t;re+=v*Math.cos(a);im+=v*Math.sin(a);}return[re/NS,im/NS];};
+function spec(){G=samp();S=[];for(let i=0;i<=250;i++)S.push(Math.hypot(...com(i/50)));}
+spec();
+const fw=$('fw');fw.oninput=()=>{sweep=false;};
+$('fwSweep').onclick=()=>{sweep=!sweep;if(sweep&&+fw.value>=4.95)fw.value=0;};
+$('fouPlay').onclick=()=>{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ac=new AC(),act=notes.filter((_,i)=>on[i]);if(!act.length)return;const gn=ac.createGain();gn.gain.setValueAtTime(0,ac.currentTime);gn.gain.linearRampToValueAtTime(0.25/act.length,ac.currentTime+0.05);gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.6);gn.connect(ac.destination);act.forEach(nt=>{const o=ac.createOscillator();o.frequency.value=nt.hz;o.connect(gn);o.start();o.stop(ac.currentTime+1.7);});};
+const Cm=mk('cvMix',150),Cw=mk('cvWind',280),Cs=mk('cvSpec',180);
+reg($('fourier'),(t,dt)=>{
+if(sweep){fw.value=Math.min(5,+fw.value+dt*0.5);if(+fw.value>=5)sweep=false;}
+const f=+fw.value,cnt=Math.max(1,on.filter(Boolean).length),tx=cv('--muted');
+$('fwO').textContent=f.toFixed(2)+' Hz';$('fouF').textContent=f.toFixed(2)+' Hz';
+const c=com(f),d=Math.hypot(...c);$('fouC').textContent=d.toFixed(3);
+const hit=notes.find((nt,i)=>on[i]&&Math.abs(nt.f-f)<0.06);$('fouY').textContent=hit?'Sí: '+hit.n+' ('+hit.p+')':'No';$('fouY').style.color=hit?'var(--ok)':'var(--muted)';
+/* mezcla */
+{const ctx=Cm.x,W=Cm.W,H=Cm.H,m=H/2,sc=(H/2-8)/cnt;ctx.clearRect(0,0,W,H);ctx.strokeStyle=cv('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,m);ctx.lineTo(W,m);ctx.stroke();
+notes.forEach((nt,i)=>{if(!on[i])return;ctx.strokeStyle=cv(nt.c);ctx.globalAlpha=.35;ctx.lineWidth=1.2;ctx.beginPath();for(let x=0;x<=W;x+=2){const tt=x/W*Tt,y=m-sc*Math.cos(2*PI*nt.f*tt);x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();});ctx.globalAlpha=1;
+ctx.strokeStyle=cv('--purple');ctx.lineWidth=2.5;ctx.beginPath();for(let x=0;x<=W;x+=2){const y=m-sc*g(x/W*Tt);x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();
+ctx.fillStyle=tx;ctx.font='12px system-ui';ctx.fillText('tiempo → (4 s)',W-90,H-6);}
+/* enrollado */
+{const ctx=Cw.x,W=Cw.W,H=Cw.H,cx=W/2,cy=H/2,R=(H/2-14)/cnt;ctx.clearRect(0,0,W,H);
+ctx.strokeStyle=cv('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-H/2,cy);ctx.lineTo(cx+H/2,cy);ctx.moveTo(cx,cy-H/2+6);ctx.lineTo(cx,cy+H/2-6);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+ctx.strokeStyle=cv('--purple');ctx.globalAlpha=.7;ctx.lineWidth=1.3;ctx.beginPath();G.forEach(([tt,v],k)=>{const a=-2*PI*f*tt,x=cx+v*R*Math.cos(a),y=cy-v*R*Math.sin(a);k?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.globalAlpha=1;
+const px=cx+c[0]*R*2,py=cy-c[1]*R*2;ctx.strokeStyle=cv('--coral');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(px,py,7,0,7);ctx.fill();
+ctx.fillStyle=tx;ctx.font='12px system-ui';ctx.fillText('centro de masa (×2)',Math.min(px+10,W-120),py-10);ctx.fillText('señal enrollada a '+f.toFixed(2)+' vueltas/s',8,16);}
+/* espectro */
+{const ctx=Cs.x,W=Cs.W,H=Cs.H,L=30,Rr=W-12,b=H-24,tp=12,X=v=>L+v/5*(Rr-L),Y=v=>b-v/0.6*(b-tp);ctx.clearRect(0,0,W,H);
+ctx.strokeStyle=cv('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,b);ctx.lineTo(Rr,b);ctx.moveTo(L,tp);ctx.lineTo(L,b);ctx.stroke();
+ctx.fillStyle=tx;ctx.font='12px system-ui';for(let i=0;i<=5;i++)ctx.fillText(i+' Hz',X(i)-10,H-6);
+ctx.fillStyle='rgba(127,119,221,0.18)';ctx.beginPath();ctx.moveTo(X(0),b);S.forEach((v,i)=>ctx.lineTo(X(i/50),Y(v)));ctx.lineTo(X(5),b);ctx.fill();
+ctx.strokeStyle=cv('--purple');ctx.lineWidth=2;ctx.beginPath();S.forEach((v,i)=>{i?ctx.lineTo(X(i/50),Y(v)):ctx.moveTo(X(0),Y(v));});ctx.stroke();
+notes.forEach((nt,i)=>{if(on[i]){ctx.fillStyle=cv(nt.c);ctx.fillText(nt.n,X(nt.f)-8,Y(0.5)-6);}});
+ctx.strokeStyle=cv('--coral');ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(X(f),tp);ctx.lineTo(X(f),b);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(X(f),Y(d),5,0,7);ctx.fill();}
+});})();
+
+/* 4 SOLIDO */
+(()=>{const C=mk('cvSol',340),nI=$('solN'),sI=$('solS'),k=0.38,EX=PI*PI/2;
+const labels=['1. La cresta','2. Girarla','3. Rebanarla','4. Sumar discos'];
+const caps=['Esta es la cresta de una onda: y = sin(x) entre 0 y π. Es una montañita que empieza en el piso, sube hasta altura 1 en la mitad (x = π/2) y vuelve a bajar.',
+'Hacemos girar la montañita alrededor del eje x, como un trompo o como un alfarero girando el barro. Al dar la vuelta completa aparece un sólido con forma de balón de rugby.',
+'Cortamos el balón en rebanadas, como un salchichón. Cada rebanada es un disco: una moneda gordita. Su radio r es la altura de la curva y su grosor es Δx. Volumen de una moneda = π · r² · Δx.',
+'El volumen del balón es la suma de todas las monedas. Con pocas quedan huecos; con más, casi no queda espacio vacío. Con infinitas monedas delgaditas, la suma se vuelve la integral: π²/2 ≈ 4,93.'];
+let step=1,th=0,animN=false,acc=0;
+labels.forEach((l,i)=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>go(i+1);$('solSteps').appendChild(b);});
+function go(s){step=s;if(s===2)th=0;[...$('solSteps').children].forEach((b,i)=>b.classList.toggle('sel',i+1===s));$('solCap').textContent=caps[s-1];$('solRowN').style.visibility=s>=3?'visible':'hidden';$('solRowS').style.visibility=s===3?'visible':'hidden';}
+nI.oninput=()=>{sI.max=+nI.value-1;if(+sI.value>+sI.max)sI.value=sI.max;};
+$('solAnim').onclick=()=>{nI.value=2;nI.oninput();animN=true;acc=0;};go(1);
+const set=(i,l,v)=>{$('sl'+i).textContent=l;$('sv'+i).textContent=v;};
+reg(C.c,(t,dt)=>{const ctx=C.x,W=C.W,H=C.H,s=Math.min((W-150)/PI,112),X0=60,Y0=172,X=x=>X0+x*s,tx=cv('--muted'),bd=cv('--faint');
+if(animN){acc+=dt;if(acc>0.12){acc=0;if(+nI.value<60){nI.value=+nI.value+1;nI.oninput();}else animN=false;}}
+const n=+nI.value,dx=PI/n,si=+sI.value;$('solNO').textContent=n;$('solSO').textContent=si+1;
+ctx.clearRect(0,0,W,H);ctx.font='12px system-ui';ctx.lineWidth=1;
+ctx.strokeStyle=bd;ctx.beginPath();ctx.moveTo(X0-20,Y0);ctx.lineTo(X(PI)+60,Y0);ctx.moveTo(X0,Y0+s+12);ctx.lineTo(X0,Y0-s-25);ctx.stroke();
+ctx.fillStyle=tx;ctx.fillText('x',X(PI)+64,Y0+4);ctx.fillText('y',X0-14,Y0-s-18);
+[[0,'0'],[PI/2,'π/2'],[PI,'π']].forEach(([v,l])=>{ctx.fillText(l,X(v)-6,H-8);ctx.strokeStyle=cv('--line');ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(X(v),Y0);ctx.lineTo(X(v),H-22);ctx.stroke();ctx.setLineDash([]);});
+const curve=(phi,col,w)=>{ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();for(let i=0;i<=80;i++){const x=i/80*PI,r=Math.sin(x),px=X(x)+k*r*Math.sin(phi)*s,py=Y0-r*Math.cos(phi)*s;i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();};
+const sil=fill=>{ctx.beginPath();for(let i=0;i<=80;i++){const x=i/80*PI;ctx.lineTo(X(x),Y0-Math.sin(x)*s);}for(let i=80;i>=0;i--){const x=i/80*PI;ctx.lineTo(X(x),Y0+Math.sin(x)*s);}ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}};
+if(step===1){ctx.beginPath();ctx.moveTo(X(0),Y0);for(let i=0;i<=80;i++){const x=i/80*PI;ctx.lineTo(X(x),Y0-Math.sin(x)*s);}ctx.closePath();ctx.fillStyle='rgba(127,119,221,0.25)';ctx.fill();
+curve(0,cv('--coral'),3);ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(X(PI/2),Y0-s,5,0,7);ctx.fill();ctx.fillStyle=tx;ctx.fillText('cima: altura 1',X(PI/2)+8,Y0-s-6);ctx.fillText('y = sin(x)',X(PI*0.15)-10,Y0-Math.sin(PI*0.15)*s-12);
+set(1,'Altura máxima','1');set(2,'Ancho de la cresta','π ≈ 3,14');set(3,'Área bajo la cresta','2 u²');}
+if(step===2){th=Math.min(2*PI,th+dt*2*PI/4);const done=th>=2*PI-1e-6;if(done)sil('rgba(127,119,221,0.18)');
+for(let p=0;p<=th;p+=PI/12)curve(p,'rgba(127,119,221,0.55)',1);
+for(let j=1;j<10;j++){const x=j*PI/10,r=Math.sin(x);if(th>0){ctx.strokeStyle='rgba(83,74,183,0.6)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(X(x),Y0,k*r*s,r*s,0,-PI/2,th-PI/2);ctx.stroke();}}
+curve(th,cv('--coral'),3);ctx.strokeStyle=tx;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(X(PI)+40,Y0,8,18,0,-PI*0.4,PI*1.3);ctx.stroke();ctx.fillStyle=tx;ctx.fillText('eje de giro',X(PI)+20,Y0+34);
+set(1,'Ángulo girado',Math.round(th*180/PI)+'°');set(2,'Radio en la mitad','1');set(3,'Forma',done?'Balón de rugby':'Girando…');}
+if(step>=3){ctx.setLineDash([4,4]);ctx.strokeStyle=bd;sil(null);ctx.stroke();ctx.setLineDash([]);let sum=0,selR=0,selA=0;
+for(let i=0;i<n;i++){const a=i*dx,b=a+dx,r=Math.max(0,Math.min(Math.sin(a),Math.sin(b)));sum+=PI*r*r*dx;const on=step===3&&i===si;if(on){selR=r;selA=a;}
+if(r>0.001){ctx.fillStyle=on?'rgba(29,158,117,0.85)':'rgba(127,119,221,0.55)';ctx.fillRect(X(a),Y0-r*s,dx*s,2*r*s);ctx.strokeStyle=on?'#0F6E56':'#534AB7';ctx.lineWidth=1;ctx.strokeRect(X(a),Y0-r*s,dx*s,2*r*s);
+ctx.fillStyle=on?'#5DCAA5':'rgba(175,169,236,0.95)';ctx.beginPath();ctx.ellipse(X(b),Y0,k*r*s,r*s,0,0,2*PI);ctx.fill();ctx.stroke();}}
+if(step===3){const xm=X(selA+dx/2);ctx.strokeStyle=cv('--coral');ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(xm,Y0);ctx.lineTo(xm,Y0-selR*s);ctx.stroke();ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(xm,Y0-selR*s,4,0,7);ctx.fill();ctx.fillStyle=tx;ctx.fillText('r = '+selR.toFixed(2),xm+8,Y0-selR*s/2);
+ctx.strokeStyle=tx;ctx.lineWidth=1;const yb=Y0+selR*s+14;ctx.beginPath();ctx.moveTo(X(selA),yb);ctx.lineTo(X(selA+dx),yb);ctx.stroke();ctx.fillText('Δx',X(selA)+dx*s/2-7,yb+14);
+set(1,'Grosor Δx = π/'+n,dx.toFixed(3));set(2,'Radio r del disco',selR.toFixed(3));set(3,'Volumen = π·r²·Δx',(PI*selR*selR*dx).toFixed(3));}
+else{set(1,'Suma de '+n+' discos',sum.toFixed(3));set(2,'Volumen exacto π²/2',EX.toFixed(3));set(3,'Qué tanto llenamos',Math.round(sum/EX*100)+'%');ctx.fillStyle=tx;ctx.fillText('Σ π·r²·Δx  →  π ∫₀^π sin²(x) dx = π²/2',X0+10,24);}}});})();
+
+/* 5 CLASICA VS CUANTICA */
+(()=>{const C=mk('cvQ',260),nI=$('nQ'),U=['B','KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+const hb=b=>{let i=0;while(b>=1024&&i<U.length-1){b/=1024;i++;}return(b<10?b.toFixed(2):b<100?b.toFixed(1):Math.round(b))+' '+U[i];};
+const big=v=>{if(v<1e7)return Math.round(v).toLocaleString('es-CO');const [m,e]=v.toExponential(2).split('e+');return m.replace('.',',')+' × 10^'+e;};
+reg(C.c,()=>{const ctx=C.x,W=C.W,H=C.H,n=+nI.value,mem=16*2**n,tx=cv('--muted');
+$('nQO').textContent=n;$('qA').textContent=big(2**n);$('qM').textContent=hb(mem);const fits=mem<=16e9;$('qF').textContent=fits?'Sí':'No';$('qF').style.color=fits?'var(--ok)':'var(--bad)';
+const L=44,R=W-12,tp=10,b=H-26,ymin=-1,ymax=20,X=v=>L+(v-1)/59*(R-L),Y=v=>b-(v-ymin)/(ymax-ymin)*(b-tp);ctx.clearRect(0,0,W,H);ctx.font='12px system-ui';
+ctx.strokeStyle=cv('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,b);ctx.lineTo(R,b);ctx.moveTo(L,tp);ctx.lineTo(L,b);ctx.stroke();
+ctx.fillStyle=tx;[0,5,10,15,20].forEach(e=>ctx.fillText('10^'+e,4,Y(e)+4));[1,10,20,30,40,50,60].forEach(v=>ctx.fillText(v,X(v)-6,H-8));
+[[Math.log10(16e9),'16 GB (portátil)'],[15,'1 PB = 10^15 bytes']].forEach(([v,l])=>{ctx.strokeStyle=cv('--faint');ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(R,Y(v));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=tx;ctx.fillText(l,L+6,Y(v)-4);});
+ctx.strokeStyle=cv('--blue');ctx.lineWidth=2;ctx.beginPath();for(let v=1;v<=60;v++){const y=Y(Math.max(ymin,Math.log10(v/8)));v>1?ctx.lineTo(X(v),y):ctx.moveTo(X(v),y);}ctx.stroke();
+ctx.strokeStyle=cv('--purple');ctx.lineWidth=2.5;ctx.beginPath();for(let v=1;v<=60;v++){const y=Y(Math.min(ymax,Math.log10(16*2**v)));v>1?ctx.lineTo(X(v),y):ctx.moveTo(X(v),y);}ctx.stroke();
+const yv=Math.min(ymax,Math.log10(mem));ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(X(n),Y(yv),6,0,7);ctx.fill();ctx.fillStyle=tx;ctx.fillText('cúbits →',R-56,b-6);});})();
+
+/* 6 RESONANCIA */
+(()=>{const C=mk('cvRes',300),dI=$('dRes'),Om=10,tp=1/(2*Om);let start=performance.now();
+const P=(d,t)=>{const w=Math.sqrt(Om*Om+d*d);return Om*Om/(w*w)*Math.sin(PI*w*t)**2;};
+dI.addEventListener('input',()=>start=performance.now());$('resPlay').onclick=()=>start=performance.now();
+reg(C.c,now=>{const ctx=C.x,W=C.W,H=C.H,d=+dI.value,pf=P(d,tp),tx=cv('--muted'),bd=cv('--faint');
+$('dResO').textContent=(d>0?'+':'')+d+' MHz';$('resF').textContent=((5000+d)/1000).toFixed(4).replace('.',',')+' GHz';$('resP').textContent=Math.round(pf*100)+'%';
+const g=$('resG');g.textContent=pf>0.95?'Correcta':pf>0.5?'Con ruido':'Falla';g.style.color=pf>0.95?'var(--ok)':pf>0.5?'var(--warn)':'var(--bad)';
+ctx.clearRect(0,0,W,H);ctx.font='12px system-ui';ctx.lineWidth=1;const L=44,R=W-20,x=v=>L+(v+30)/60*(R-L),top=20,bot=130;
+ctx.strokeStyle=bd;ctx.beginPath();ctx.moveTo(L,bot);ctx.lineTo(R,bot);ctx.moveTo(L,top);ctx.lineTo(L,bot);ctx.stroke();
+ctx.fillStyle=tx;ctx.fillText('P final',2,top+4);ctx.fillText('−30 MHz',L,bot+16);ctx.fillText('0',x(0)-3,bot+16);ctx.fillText('+30 MHz',R-52,bot+16);
+ctx.strokeStyle=cv('--purple');ctx.lineWidth=2;ctx.beginPath();for(let v=-30;v<=30;v+=0.25){const y=bot-P(v,tp)*(bot-top);v===-30?ctx.moveTo(x(v),y):ctx.lineTo(x(v),y);}ctx.stroke();
+ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(x(d),bot-pf*(bot-top),6,0,7);ctx.fill();
+const t2=170,b2=280,prog=Math.min(1,(now-start)/2000),xt=t=>L+t/tp*(R-L-80);
+ctx.strokeStyle=bd;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,b2);ctx.lineTo(R-80,b2);ctx.moveTo(L,t2);ctx.lineTo(L,b2);ctx.stroke();
+ctx.fillStyle=tx;ctx.fillText('P(|1⟩)',2,t2+4);ctx.fillText('tiempo del pulso',L,b2+16);
+ctx.strokeStyle='rgba(55,138,221,0.35)';ctx.beginPath();for(let i=0;i<=200;i++){const t=i/200*tp*prog,y=(t2+b2)/2+12*Math.sin(2*PI*i/200*14*prog);i?ctx.lineTo(xt(t),y):ctx.moveTo(xt(t),y);}ctx.stroke();
+ctx.strokeStyle=cv('--teal');ctx.lineWidth=2.5;ctx.beginPath();for(let i=0;i<=200;i++){const t=i/200*tp*prog,y=b2-P(d,t)*(b2-t2);i?ctx.lineTo(xt(t),y):ctx.moveTo(xt(t),y);}ctx.stroke();
+const pc=P(d,tp*prog),bx=R-50;ctx.strokeStyle=bd;ctx.strokeRect(bx,t2,30,b2-t2);ctx.fillStyle=cv('--teal');ctx.fillRect(bx,b2-pc*(b2-t2),30,pc*(b2-t2));ctx.fillStyle=tx;ctx.fillText('|1⟩',bx+6,t2-6);ctx.fillText('|0⟩',bx+6,b2+16);});})();
+
+/* 7 FIBRA */
+(()=>{const opts=[[600,7],[850,2.5],[1310,0.33],[1550,0.2]];let lam=1550,al=0.2,ph=[],sent=0,got=0,acc=0;
+const C=mk('cvFib',130),LI=$('fibL'),B=$('fibBtns');const reset=()=>{ph=[];sent=0;got=0;};
+opts.forEach(([l,a])=>{const b=document.createElement('button');b.textContent=l+' nm';b.dataset.l=l;b.onclick=()=>{lam=l;al=a;reset();mark();};B.appendChild(b);});
+const mark=()=>[...B.children].forEach(b=>b.classList.toggle('sel',+b.dataset.l===lam));mark();LI.oninput=reset;
+reg(C.c,(t,dt)=>{const ctx=C.x,W=C.W,H=C.H,L=+LI.value,v=L/3,Le=10/(al*Math.LN10);
+acc+=dt;while(acc>0.05){acc-=0.05;ph.push({x:0,d:-Math.log(Math.random())*Le,dead:0,y:(Math.random()-0.5)*10});sent++;}
+$('fibLO').textContent=L+' km';$('fibA').textContent=String(al).replace('.',',')+' dB/km';const th=Math.pow(10,-al*L/10);$('fibT').textContent=th<0.001?th.toExponential(1):(th*100).toFixed(1)+'%';$('fibC').textContent=got+' / '+sent;
+ctx.clearRect(0,0,W,H);const x0=56,x1=W-50,mid=60,tx=cv('--muted');ctx.fillStyle=cv('--soft');ctx.fillRect(x0,mid-14,x1-x0,28);ctx.strokeStyle=cv('--faint');ctx.lineWidth=1;ctx.strokeRect(x0,mid-14,x1-x0,28);
+ctx.fillStyle=tx;ctx.font='12px system-ui';ctx.fillText('Alice',8,mid+4);ctx.fillText('Bob',x1+10,mid+4);ctx.fillText('0 km',x0,mid+32);ctx.fillText(L+' km',x1-36,mid+32);
+for(const p of ph){if(p.dead)p.dead+=dt;else{p.x+=v*dt;if(p.x>=p.d&&p.d<L)p.dead=0.001;else if(p.x>=L){p.done=1;got++;}}
+const px=x0+Math.min(p.x,L)/L*(x1-x0);if(p.dead){ctx.fillStyle='rgba(136,135,128,'+Math.max(0,1-p.dead*2)+')';ctx.beginPath();ctx.arc(px,mid+p.y-p.dead*30,3,0,7);ctx.fill();}else if(!p.done){ctx.fillStyle=cv('--coral');ctx.beginPath();ctx.arc(px,mid+p.y,3.5,0,7);ctx.fill();}}
+ph=ph.filter(p=>!p.done&&p.dead<0.5);});})();
+
+/* 8 DECOY */
+(()=>{let eve=false,c,strip=[],acc=0;const rs=()=>{c={s:[0,0],d:[0,0]};};rs();
+const poi=m=>{const L=Math.exp(-m);let k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;};
+const pulse=()=>{const s=Math.random()<0.5,n=poi(s?0.5:0.1);let det=false;if(!eve){for(let i=0;i<n;i++)if(Math.random()<0.1){det=true;break;}}else det=n>=2&&Math.random()<0.541;const kk=s?c.s:c.d;kk[0]++;if(det)kk[1]++;return{s,n,det};};
+$('eveBtn').onclick=e=>{eve=!eve;rs();e.target.textContent=eve?'Quitar a Eva':'Activar a Eva (ataque PNS)';$('eveSt').textContent=eve?'Eva está en la línea':'Canal honesto';};$('eveRst').onclick=rs;
+reg($('decoy'),(t,dt)=>{acc+=dt;if(acc<0.12)return;acc=0;for(let i=0;i<800;i++){const p=pulse();if(i<2)strip.push(p);}strip=strip.slice(-16);
+$('eveStrip').innerHTML=strip.map(p=>`<div class="pulse${p.det?' det':''}" style="background:${p.s?'rgba(216,90,48,0.12)':'rgba(127,119,221,0.14)'}"><div class="t">${p.s?'señal':'señuelo'}</div><div style="min-height:20px">${'●'.repeat(p.n)||'·'}</div></div>`).join('');
+const r1=c.s[1]/Math.max(1,c.s[0]),r2=c.d[1]/Math.max(1,c.d[0]),ra=r2?r1/r2:0,tot=c.s[0]+c.d[0];
+$('eveS').textContent=(r1*100).toFixed(2)+'%';$('eveD').textContent=(r2*100).toFixed(2)+'%';$('eveR').textContent=ra.toFixed(1);
+const A=$('eveA');if(tot<20000){A.className='alert';A.textContent='Recolectando estadística… ('+tot.toLocaleString('es-CO')+' pulsos)';}else if(ra>7){A.className='alert bad';A.textContent='Alarma: la señal llega normal, pero los señuelos casi desaparecieron. Hay un espía.';}else{A.className='alert ok';A.textContent='Todo cuadra con la física del canal. La clave es segura.';}});})();
+
+/* 9 GROVER */
+(()=>{const N=8,T=5;let a,it;const cols=[...Array(N)].map((_,i)=>{const d=document.createElement('div');d.className='col';d.innerHTML=`<div class="area"><div class="mid"></div><div class="b" style="background:var(${i===T?'--teal':'--purple'})"></div></div><div class="lab mono">${i.toString(2).padStart(3,'0')}</div><div class="lab p" style="color:var(--muted)"></div>`;$('grBars').appendChild(d);return d;});
+const render=()=>{a.forEach((v,i)=>{const b=cols[i].querySelector('.b'),h=Math.abs(v)*90;b.style.top=(v>=0?100-h:100)+'px';b.style.height=h+'px';cols[i].querySelector('.p').textContent=Math.round(v*v*100)+'%';});$('grI').textContent=it;$('grP').textContent=(a[T]*a[T]*100).toFixed(1)+'%';};
+const reset=()=>{a=Array(N).fill(1/Math.sqrt(N));it=0;$('grMs').textContent='—';$('grMs').style.color='';render();};
+$('grO').onclick=()=>{a[T]*=-1;render();};$('grD').onclick=()=>{const m=a.reduce((s,x)=>s+x,0)/N;a=a.map(x=>2*m-x);it++;render();};
+$('grM').onclick=()=>{let r=Math.random(),k=0;for(;k<N-1;k++){r-=a[k]*a[k];if(r<0)break;}const e=$('grMs');e.textContent=k.toString(2).padStart(3,'0');e.style.color=k===T?'var(--ok)':'var(--bad)';};
+$('grR').onclick=reset;reset();})();
+
+/* QUIZ */
+(()=>{const Q=[
+{q:'Una onda tiene f = 5 Hz. ¿Cuánto vale su periodo?',o:['5 s','0,2 s','0,5 s'],a:1,e:'T = 1/f = 1/5 = 0,2 s.'},
+{q:'Si duplico la frecuencia de un sonido, ¿qué le pasa a su longitud de onda?',o:['Se duplica','No cambia','Se reduce a la mitad'],a:2,e:'λ = v/f y v no cambia: si f se duplica, λ se reduce a la mitad.'},
+{q:'¿Cuándo dos ondas se cancelan (interferencia destructiva)?',o:['Cresta con cresta','Cresta con valle','Valle con valle'],a:1,e:'Una empuja la presión hacia arriba y la otra hacia abajo: la suma queda cerca del equilibrio.'},
+{q:'En la máquina de Fourier, ¿qué pasa cuando la velocidad de giro coincide con una frecuencia de la mezcla?',o:['El centro de masa se aleja del centro','La curva desaparece','El centro de masa se queda en el centro'],a:0,e:'La curva se carga hacia un lado y el centro de masa se desplaza: aparece un pico en el espectro.'},
+{q:'¿Cuál es el volumen al girar y = sin(x) entre 0 y π alrededor del eje x?',o:['2','π²/2','π'],a:1,e:'V = π∫sin²(x)dx de 0 a π = π²/2 ≈ 4,93.'},
+{q:'¿Por qué QKD usa 1550 nm en fibra óptica?',o:['Es luz visible','Tiene la menor atenuación','Viaja más rápido'],a:1,e:'En 1550 nm la fibra pierde unos 0,2 dB/km, el mínimo práctico.'},
+{q:'Un estado tiene amplitud 0,6. ¿Cuál es su probabilidad de salir al medir?',o:['0,6','0,36','0,06'],a:1,e:'Probabilidad = amplitud² = 0,36.'},
+{q:'¿Qué delata al espía en el protocolo de pulsos señuelo?',o:['Que se pierdan fotones','Que cambie la proporción de llegadas señal/señuelo','Que la luz cambie de color'],a:1,e:'Eva no distingue señal de señuelo; su ataque desbalancea la estadística de llegadas.'}];
+let score=0,done=0;const box=$('quizBox');
+Q.forEach(item=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<div><b>${item.q}</b></div><div class="opts"></div><div class="exp"></div>`;
+item.o.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;if(i===item.a)score++;b.classList.add(i===item.a?'right':'wrong');d.querySelectorAll('.opts button')[item.a].classList.add('right');d.querySelector('.exp').textContent=item.e;$('quizScore').textContent=`Puntaje: ${score} / ${done}`+(done===Q.length?(score===Q.length?' · ¡Dominas los cimientos!':' · Repasa las secciones que fallaste.'):'');};d.querySelector('.opts').appendChild(b);});box.appendChild(d);});})();
+</script>
+</body>
+</html>
