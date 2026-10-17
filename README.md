@@ -1,4 +1,4 @@
-# ∿ Ciencias básicas: los cimientos de la ingeniería
+#  Ciencias básicas: los cimientos de la ingeniería
 
 Recorrido **interactivo** que va de una onda de sonido a la **transformada de Fourier**, el **cálculo integral** y la **computación cuántica aplicada a la ciberseguridad**. Pensado para cualquier persona que esté por entrar, esté cursando o ya vaya avanzada en una ingeniería.
 
