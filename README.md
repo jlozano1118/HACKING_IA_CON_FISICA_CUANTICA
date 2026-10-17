@@ -21,14 +21,7 @@ Recorrido **interactivo** que va de una onda de sonido a la **transformada de Fo
 
 Además: mapa de ciencias básicas que resalta dónde se usa cada una, modo claro/oscuro y diseño adaptado a celular.
 
-## Cómo verlo
 
-**En línea (GitHub Pages):**
-1. Sube `index.html` y `README.md` a la raíz del repositorio.
-2. En GitHub: *Settings → Pages → Build and deployment → Source: Deploy from a branch*, rama `main`, carpeta `/ (root)`.
-3. En uno o dos minutos queda en `https://jlozano1118.github.io/<nombre-del-repo>/`.
-
-**En tu computador:** descarga `index.html` y ábrelo con doble clic. No necesita instalar nada ni conexión a internet.
 
 ## Tecnología
 
