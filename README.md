@@ -45,4 +45,4 @@ Las simulaciones son modelos educativos simplificados. Dos precisiones que el si
 **Juan Sebastian Lozano Calderon** — Ingeniería de Sistemas y Computación, Universidad Católica de Colombia.
 [GitHub](https://github.com/jlozano1118) · [Instagram](https://instagram.com/js_lozanocalderon)
 
-Con gratitud a los profesores de ciencias básicas Giovanni Martínez (2022-1), Ruben castaneda (2022-3), Mario Suarez (2022-3), Valery Cely (2024-1), Nelson Fino(2024-1/2024-3/2025-3), Fredy Sierra (2024-3) y Leonardo Silva (2025-3). Construido con IA como copiloto; el entendimiento, las preguntas y las conexiones son trabajo humano.
+Con gratitud a los profesores de ciencias básicas Giovanni  Martínez Lopez (2022-1), Ruben Dario Castaneda Barbosa (2022-3), Mario Mario Suarez Urena (2022-3), Valeria Cely Rojas (2024-1), Nelson Ricardo Fino Puerto(2024-1/2024-3/2025-3), Fredy Leonardo Sierra Guzman (2024-3) y Stiven Leonardo Silva Castillo(2025-3). Construido con IA como copiloto; el entendimiento, las preguntas y las conexiones son trabajo humano.
